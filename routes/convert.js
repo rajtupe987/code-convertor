@@ -52,63 +52,56 @@ code_convertor.post('/convert', async (req, res) => {
  
 
 
-// for debug
-code_convertor.post('/debug', async (req, res) => {
+  code_convertor.post('/debug', async (req, res) => {
+    const code = req.body.code;
   
-  const code=req.body.code;
-
-  if (!code) {
-    //console.log("Unsupported target language:", targetLanguage);
-    return res.status(400).json({ error: "plese provide code" });
-  }
-
-  try {
-    // Create a prompt based on the selected target language and the provided code
-    const prompt = `debug this code and also give some suggetion that how you can improve your given code ${code}`;
-
-
-    // Make a request to the GPT API for code conversion
-    const response = await axios.post('https://api.openai.com/v1/engines/text-davinci-003/completions', {
-      prompt: prompt,
-      max_tokens: 2048,
-      temperature: 1,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GPT_API_KEY}`,
-      },
-    });
-
-    const debugcode = response.data.choices[0].text;
-    //console.log(convertedCode)
-    res.json({ "debugedcode": debugcode});
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ error: error.message });
-  }
-
-});
-
-
+    if (!code) {
+      return res.status(400).json({ error: "Please provide code." });
+    }
+  
+    try {
+      const prompt = `debug this code and also give some suggestions on how to improve your given code:\n${code}`;
+  
+      // Make a request to the GPT API for debugging the code
+      const response = await axios.post('https://api.openai.com/v1/engines/text-davinci-003/completions', {
+        prompt: prompt,
+        max_tokens: 2048,
+        temperature: 1,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GPT_API_KEY}`,
+        },
+      });
+  
+      if (!response.data.choices || response.data.choices.length === 0) {
+        return res.status(500).json({ error: "Unexpected response from GPT API." });
+      }
+  
+      const debuggedCode = response.data.choices[0].text;
+      res.json({ debuggedCode });
+    } catch (error) {
+      console.error('Error:', error.message);
+      res.status(500).json({ error: "An error occurred while processing the request." });
+    }
+  });
+  
 
 
 
 
 // Route for handling the accuracy button
 code_convertor.post('/accuracy', async (req, res) => {
-  
-  const code=req.body.code;
+  const code = req.body.code;
 
   if (!code) {
-    //console.log("Unsupported target language:", targetLanguage);
-    return res.status(400).json({ error: "plese provide code" });
+    return res.status(400).json({ error: "Please provide code." });
   }
 
   try {
-    // Create a prompt based on the selected target language and the provided code
-    const prompt = `check the accuracy of given code check every thing inside the provided code then give the accuracy of the givien code${code}`;
+    const prompt = `check the accuracy of the given code and provide suggestions for improvements:\n${code}`;
 
-    // Make a request to the GPT API for code conversion
+    // Make a request to the GPT API for checking the accuracy of the code
     const response = await axios.post('https://api.openai.com/v1/engines/text-davinci-003/completions', {
       prompt: prompt,
       max_tokens: 2048,
@@ -120,16 +113,18 @@ code_convertor.post('/accuracy', async (req, res) => {
       },
     });
 
-    const accuracy_code = response.data.choices[0].text;
-    //console.log(convertedCode)
-    res.json({ "accuratecode": accuracy_code});
+    if (!response.data.choices || response.data.choices.length === 0) {
+      return res.status(500).json({ error: "Unexpected response from GPT API." });
+    }
+
+    const accurateCode = response.data.choices[0].text;
+    res.json({ accurateCode });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ error: error.message });
+    console.error('Error:', error.message);
+    res.status(500).json({ error: "An error occurred while processing the request." });
   }
-
-
 });
+
 
 
 
