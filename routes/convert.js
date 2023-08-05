@@ -13,6 +13,11 @@ code_convertor.post('/convert', async (req, res) => {
     const code=req.body.code;
     const targetLanguage=req.body.targetLanguage
 
+  
+    if(!code || !targetLanguage){
+      return res.status(400).json({ error: "Please provide code" });
+    }
+
     // Validate if the target language is supported
     if (!supportedLanguages.includes(targetLanguage)) {
       //console.log("Unsupported target language:", targetLanguage);
@@ -52,12 +57,10 @@ code_convertor.post('/debug', async (req, res) => {
   
   const code=req.body.code;
 
-
   if (!code) {
     //console.log("Unsupported target language:", targetLanguage);
     return res.status(400).json({ error: "plese provide code" });
   }
-
 
   try {
     // Create a prompt based on the selected target language and the provided code
@@ -85,6 +88,11 @@ code_convertor.post('/debug', async (req, res) => {
   }
 
 });
+
+
+
+
+
 
 // Route for handling the accuracy button
 code_convertor.post('/accuracy', async (req, res) => {
@@ -119,6 +127,7 @@ code_convertor.post('/accuracy', async (req, res) => {
     console.log(error.message);
     res.status(500).json({ error: error.message });
   }
+
 
 });
 
