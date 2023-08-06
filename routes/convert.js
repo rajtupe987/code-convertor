@@ -6,7 +6,7 @@ const code_convertor = express.Router()
 
 const GPT_API_KEY = process.env.API_KEY;
 
-const supportedLanguages = ["java", "python", "javascript"];
+const supportedLanguages = ["java", "python", "javascript","C","C++","Ruby","PHP"];
 // Code conversion route
 code_convertor.post('/convert', async (req, res) => {
 
